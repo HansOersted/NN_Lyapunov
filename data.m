@@ -8,7 +8,7 @@ close all
 
 %%  
 
-sample_time = 0.01;
+sample_time = 0.05;
 length = 100;
 
 x_0 = 1;

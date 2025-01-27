@@ -8,7 +8,7 @@ close all
 dimension = 1; % dimension of the state
 length = 20;
 
-n1 = 90; % number of samples for training
+n1 = 100; % number of samples for training
 n2 = 10;  % number of samples for exploring
 
 % for i = 1 : n1
