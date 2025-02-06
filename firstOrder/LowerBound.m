@@ -1,4 +1,3 @@
-close all
 
 %%  There are 2 types of the samples.
 %   n1 samples: number of samples for training
@@ -6,10 +5,10 @@ close all
 
 % sample_time = 0.04;  % unless you wanna do the numerical calculation
 dimension = 1; % dimension of the state
-length = 20;
+% length = 100;
 
-n1 = 100; % number of samples for training
-n2 = 10;  % number of samples for exploring
+% n1 = 100; % number of samples for training
+% n2 = 10;  % number of samples for exploring
 
 % for i = 1 : n1
 %     training_sample(i).data = zeros(length, dimension);
@@ -23,10 +22,10 @@ n2 = 10;  % number of samples for exploring
 
 %% Prepare for training
 
-gamma = 0.5;
+gamma = 0.01;
 h = 32; % width of the hidden layer
 learning_rate = 1e-3;
-num_epochs = 100;
+num_epochs = 3;
 
 % Define the weight for the NN
 L1 = randn(h, dimension); % from input to hidden layer 1
@@ -39,7 +38,7 @@ L_out = randn(dimension * (2 * dimension), h); % from hidden layer to output
 b_out = zeros(dimension * (2 * dimension), 1);
 
 %% Fix lambda
-lambda_val = 1; % Fixed lambda value
+lambda_val = 4; % Fixed lambda value
 
 %%  Training loop
 %   grad(V) * dx + lambda * V <= - gamma
@@ -51,9 +50,14 @@ lambda_val = 1; % Fixed lambda value
 
 %% Training loop
 loss_history = zeros(num_epochs, 1);
+A_history = zeros(num_epochs, 1);
+A_history_each_epoch = [];
+constraint_history = zeros(num_epochs, 1);
+constraint_history_each_epoch = [];
 
 for epoch = 1 : num_epochs
     total_loss = 0;
+    currentEpochs = epoch
 
     % Initialize gradients
     dL1 = zeros(size(L1));
@@ -76,7 +80,9 @@ for epoch = 1 : num_epochs
             
             % Constraint computation
             A = L_pred * L_pred' + eye(dimension); % Coefficient matrix
+            A_history_each_epoch = A;
             constraint = 2 * (x' * A * dx) + lambda_val * (x' * A * x) + gamma; % Use fixed lambda_val
+            constraint_history_each_epoch = constraint;
             
             % Loss computation
             constraint_violation = max(0, constraint); % constraint_violation should be non-positive
@@ -118,11 +124,13 @@ for epoch = 1 : num_epochs
 
     % Save loss history
     loss_history(epoch) = total_loss;
+    A_history(epoch) = A_history_each_epoch;
+    constraint_history(epoch) = constraint_history_each_epoch;
 
-    % Print loss
-    if mod(epoch, 10) == 0
-        fprintf('Epoch %d, Loss: %.4f\n', epoch, total_loss);
-    end
+    % % Print loss
+    % if mod(epoch, 10) == 0
+    %     fprintf('Epoch %d, Loss: %.4f\n', epoch, total_loss);
+    % end
 end
 
 %% Plot results
@@ -131,4 +139,18 @@ plot(loss_history, 'LineWidth', 2);
 xlabel('Epoch');
 ylabel('Loss');
 title('Training Loss');
+grid on;
+
+figure;
+plot(A_history, 'LineWidth', 2);
+xlabel('Epoch');
+ylabel('A');
+title('A History');
+grid on;
+
+figure;
+plot(constraint_history, 'LineWidth', 2);
+xlabel('Epoch');
+ylabel('Constraint');
+title('Constraint History');
 grid on;

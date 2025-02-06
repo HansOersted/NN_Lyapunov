@@ -11,19 +11,19 @@ close all
 sample_time = 0.05;
 length = 100;
 
-x_0 = 1;
-
-t = 0 : sample_time : (length - 1) * sample_time;
-plot(t, x_0 * exp(-t));
-hold on
-plot(t, -x_0 * exp(-t));
+% x_0 = 1;
+% 
+% t = 0 : sample_time : (length - 1) * sample_time;
+% plot(t, x_0 * exp(-t));
+% hold on
+% plot(t, -x_0 * exp(-t));
 
 %%
 
 dimension = 1; % dimension of the state
 
 
-n1 = 200; % number of samples for training
+n1 = 100; % number of samples for training
 n2 = 10;  % number of samples for exploring
 
 for i = 1 : n1
@@ -32,9 +32,10 @@ for i = 1 : n1
 end
 
 for i = 1 : n1
+    x_0 = i;
     for idx = 1 : length
         training_sample(i).data(idx) = x_0 * exp(-(idx - 1) * sample_time);
-        derivative_training_sample(i).data(idx) = -x_0 * exp(-(idx - 1));
+        derivative_training_sample(i).data(idx) = -x_0 * exp(-(idx - 1) * sample_time);
     end
 end
 
